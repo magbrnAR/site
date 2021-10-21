@@ -1,0 +1,1 @@
+$(document).ready(function(){$('.open').click(function(){$('.sidebar').slideToggle();$('.open').toggleClass('active');});$('.close, .bot-close').click(function(){$('.on-player-pl').hide();});});
