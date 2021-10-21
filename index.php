@@ -25,6 +25,7 @@
 </head>
 
 <body>
+    <script type="application/javascript" data-idzone="4472606"  data-ad_frequency_count="1"  data-ad_frequency_period="720"  data-type="desktop" data-browser_settings="1" data-ad_trigger_method="3" src="https://a.realsrv.com/fp-interstitial.js"></script>
     <div class="head">
         <div class="wrap">
             <div class="open"><i class="fa fa-bars"></i></div>
