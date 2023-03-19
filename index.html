@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Speech Recognition</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp|Material+Symbols+Rounded"
+    rel="stylesheet">
+</head>
+<style>
+  bodY {
+    margin: 10;
+    padding: 10;
+    box-sizing: border-box;
+  }
+
+  .center {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .wave {
+    width: 5px;
+    height: 20px;
+    background: linear-gradient(45deg, white, #fff);
+    margin: 8px;
+    animation: wave 1s infinite;
+    border-radius: 20px;
+  }
+
+  .wave:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .wave:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .wave:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+
+  .wave:nth-child(5) {
+    animation-delay: 0.4s;
+  }
+
+  .wave:nth-child(6) {
+    animation-delay: 0.5s;
+  }
+
+  .wave:nth-child(7) {
+    animation-delay: 0.6s;
+  }
+
+  .wave:nth-child(8) {
+    animation-delay: 0.7s;
+  }
+
+  .wave:nth-child(9) {
+    animation-delay: 0.8s;
+  }
+
+  .wave:nth-child(10) {
+    animation-delay: 0.9s;
+  }
+
+  @keyframes wave {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(0);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+
+
+  .content {
+
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+  }
+
+  .myBtn {
+    border: none;
+    background: #2e3c53;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .myBtn:hover {
+    background: #ddd;
+    color: black;
+  }
+
+  #myVideo {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+
+  #speechTranscriptContainer {
+    border-style: inset;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.5);
+    width: 70%;
+    height: 70%;
+  }
+
+  /* #aiText {
+    border-style:outset;
+    color:#ffffff;
+    background: rgba(0, 0, 0, 0.5);
+      width: 70%;
+      height:70%;
+      
+  } */
+  .content {
+
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+  }
+
+  .myBtn {
+    border: none;
+    background: #2e3c53;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .myBtn:hover {
+    background: #ddd;
+    color: black;
+  }
+
+  .popup {
+    display: inline-block;
+  }
+
+  .popup .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #b1b1b1;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+    top: 20px;
+  }
+
+  .popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+  }
+</style>
+
+<body class="container mt-5 bg-dark">
+  <select id="voices" class="form-select bg-secondary text-light"></select>
+  <div class="d-flex mt-4 text-light">
+    <div>
+      <p class="lead">Volume</p>
+      <input type="range" min="0" max="1" value="1" step="0.1" id="volume" />
+      <span id="volume-label" class="ms-2">1</span>
+    </div>
+    <div class="mx-5">
+      <p class="lead">Rate</p>
+      <input type="range" min="0.1" max="2" value="1" id="rate" step="0.1" />
+      <span id="rate-label" class="ms-2">1</span>
+    </div>
+    <div>
+      <p class="lead">Pitch</p>
+      <input type="range" min="0" max="2" value="1" step="0.1" id="pitch" />
+      <span id="pitch-label" class="ms-2">1</span>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/recorderjs/0.1.0/recorder.js"
+    integrity="sha512-zSq4Vvm00k8M01OLF/SmwKryVpA7YVXIbEFHU1rvNw3pgH50SjL6O4nDbB65V76YKWmr3rPABOXJ+uz+Z3BEmw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script type="text/javascript" src="https://rawgithub.com/hiddentao/google-tts/master/google-tts.min.js"></script>
+  <div class="content">
+    <center>
+      <br><br>
+      <!-- <h1>Simple Recorder.js demo</h1> -->
+      <div id="controls">
+        <video autoplay muted loop id="myVideo">
+          <source src="/static/background.mp4" type="video/mp4">
+        </video>
+
+
+        <table>
+          <tr>
+            <td colspan="4" style="padding-right: 10px"><textarea rows="5" cols="60" class="content" id="inputtext"
+                type="text"></textarea></td>
+            <td style="padding-right: 10px"><i class="material-symbols-rounded" id="myvoice"
+                style="font-size:38px;background-color: #665858; padding: 10px 10px 10px 10px;border-radius: 8px; ">text_to_speech</i>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-right: 10px">
+              <i class="material-icons-round" id="myMicImg"
+                style="font-size:34px;background-color: #665858; border-radius: 28px; padding: 10px 10px 10px 10px;"
+                onclick="changeImage()">mic</i>
+            </td>
+            <td style="padding-right: 10px">
+              <span class="center" id="myname"
+                style="background-color: cadet#665858; border-radius: 28px; padding: 8px 5px 8px 5px;">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+              </span>
+            </td>
+            <td style="padding-right: 10px"><i class="material-icons-round" id="cancelButton"
+                style="font-size:32px;background-color: #665858; border-radius: 28px; padding: 10px 10px 10px 10px;">front_hand</i>
+            </td>
+            <td><i class="material-icons-round" id="chatButton"
+                style="font-size:32px;background-color: #665858; border-radius: 28px; padding: 10px 10px 10px 10px;"
+                onclick="pop()">forum</i></td>
+          </tr>
+          <tr>
+            <td colspan="4" align="center">
+              <script type="text/javascript">
+
+              </script>
+              <div class="popup" style="text-align:center;">
+                <span class="popuptext" id="myPopup">
+                  <input type="text" id="inputPopup" /> &nbsp;
+                  <i class="material-symbols-rounded" id="inputButton"
+                    style="font-size:24px;background-color: #665858; border-radius: 20px; padding: 5px 5px 5px 5px; position: relative;top: 5px"
+                    onclick="sendmsg()">send</i>
+                </span>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <br>
+      <div id="result"></div>
+      <br>
+      <!-- <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+      <script src="styles/js/app.js"></script> -->
+      <div id="speechTranscriptContainer">
+        <p id="speechText"></p>
+        <br><br>
+        <p id="aiText"></p>
+      </div>
+
+    </center>
+  </div>
+
+
+
+  <!-- <div id="result"></div> -->
+
+  <script>
+    //webkitURL is deprecated but nevertheless
+    URL = window.URL || window.webkitURL;
+    var gumStream;                      //stream from getUserMedia()
+    var rec;                            //Recorder.js object
+    var input;                          //MediaStreamAudioSourceNode we'll be recording
+
+    var audioContext //audio context to help us record
+
+    var sentences = ["Pardon me,,, I'm not sure if I understand you correctly, please repeat your question and speak loud and clear. ",
+      "Would you mind asking me again?? I didn't hear you properly.",
+      "Ohh boy, I’m having an off day. Would you say that again?",
+      "oh,, Sorry, I didn’t catch your drift. Can you try saying that, in a different way?",
+      "Excuse me,,, It’s a little bit noisy here,, and I couldn’t hear you. ,, if you don’t mind?,,,, please repeat again.",
+      "Wait, I didn’t get that. Please repeat, and speak louder.",
+      "wow,,, Sorry,!! I thought I saw a squirrel :) What was that agaiin???? ",
+      "oohhh!,  I didn't hear anything ,,,,did yoou????,, Hah-hah",
+      "I must be on crack,,, cuz I swear you were speaking Gibrish,. Please try again louder.",
+      "aah,, I didn't quite catch that. , Could you repeat it agaiin????",
+      "ooh, Sorry, I am afraid I didn't quite catch that., Could you please repeat your question????"]
+
+    let speech = new SpeechSynthesisUtterance();
+    speech.lang = "en-US";
+    const synth = window.speechSynthesis;
+    // var recordButton = document.getElementById("recordButton");
+    // var stopButton = document.getElementById("stopButton");
+    var cancelButton = document.getElementById("cancelButton");
+    var intermed = document.getElementById("inputtext");
+    var listenBtn = document.getElementById('myvoice');
+    var result = document.getElementById("speechText")
+    var expact_answer = ""
+    var flag = false
+
+    let voices;
+    var voiceSelect = document.getElementById('voices');
+
+
+    function startRecording() {
+      var constraints = { audio: true, video: false }
+      window.speechSynthesis.cancel();
+      cancelButton.disabled = false;
+      document.getElementById("myname").style.display = "flex";
+      console.log('Speech recognition started');
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        audioContext = new AudioContext();
+        gumStream = stream;
+        /* use the stream */
+        input = audioContext.createMediaStreamSource(stream);
+        rec = new Recorder(input, { numChannels: 1 })
+        rec.record()
+      }).catch(function (err) {
+        //enable the record button if getUserMedia() fails
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+        // pauseButton.disabled = true
+      });
+    }
+
+
+    function stopRecording() {
+      document.getElementById("myname").style.display = "flex";
+      rec.stop();
+
+      //stop microphone access
+      gumStream.getAudioTracks()[0].stop();
+
+      //create the wav blob and pass it on to createDownloadLink
+      rec.exportWAV(createDownloadLink);
+    }
+
+
+    function createDownloadLink(blob) {
+
+      var url = URL.createObjectURL(blob);
+      var au = document.createElement('audio');
+      var filename = "yash"//new Date().toISOString();
+
+      //add controls to the <audio> element
+      au.controls = true;
+      au.src = url;
+
+      //upload link
+      var upload = document.createElement('a');
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function (e) {
+        if (this.readyState === 4) {
+          window.output = JSON.parse(e.target.responseText);
+          console.log("Server ASRs returned: ", output);
+          result = output.query;
+          document.getElementById("result").innerHTML = result;
+          aitextresponse();
+          // document.getElementById("speechText").innerHTML = "USER : " + output.query;
+          // document.getElementById("aiText").innerHTML = "XOXE : " + output.response;
+          // speech.text = output.response
+          // window.speechSynthesis.speak(speech);
+          // recordButton.disabled = false;
+          // document.getElementById("myname").style.display = "none";
+        }
+      };
+      var fd = new FormData();
+      fd.append("file", blob, filename);
+      xhr.open("POST", "https://jerry4148.pythonanywhere.com/stt");
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(fd);
+    }
+
+
+    function loadVoices() {
+      // Fetch the available voices.
+      voices = synth.getVoices();
+      let userAgent = navigator.userAgent;
+
+      // Loop through each of the voices.
+      voices.forEach(function (voice, i) {
+        // Create a new option element.
+        if (userAgent.match(/safari/i)) {
+          if (voice.lang.includes("en") && (voice.voiceURI.includes("com.apple.voice.compact.en"))) { // && voice.voiceURI.includes("en-US")) || voice.lang=="en-GB"
+            var option = document.createElement('option');
+            console.log(voice)
+            // Set the options value and text.
+            option.value = voice.name;
+            option.innerHTML = voice.name;
+
+            // Add the option to the voice selector.
+            voiceSelect.appendChild(option);
+          }
+        } else {
+          var option = document.createElement('option');
+          console.log(voice)
+          // Set the options value and text.
+          option.value = voice.name;
+          option.innerHTML = voice.name;
+
+          // Add the option to the voice selector.
+          voiceSelect.appendChild(option);
+        }
+      });
+    }
+    loadVoices();
+
+    document.querySelector("#rate").addEventListener("input", () => {
+      const rate = document.querySelector("#rate").value;
+      speech.rate = rate;
+      document.querySelector("#rate-label").innerHTML = rate;
+    });
+
+    document.querySelector("#volume").addEventListener("input", () => {
+      const volume = document.querySelector("#volume").value;
+      speech.volume = volume;
+      document.querySelector("#volume-label").innerHTML = volume;
+    });
+
+    document.querySelector("#pitch").addEventListener("input", () => {
+      const pitch = document.querySelector("#pitch").value;
+      speech.pitch = pitch;
+      document.querySelector("#pitch-label").innerHTML = pitch;
+    });
+
+    document.querySelector("#voices").addEventListener("change", () => {
+      speech.voice = voices[document.querySelector("#voices").value];
+    });
+
+    function afterSpeech() {
+      console.log("Speech complete!");
+      // rec.start()
+    }
+
+    function speak() {
+      speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+      speech.text = intermed.value
+      window.speechSynthesis.speak(speech);
+    }
+
+
+    function add(type, value) {
+      //Create an input type dynamically.   
+      var element = document.createElement("button");
+      //Assign different attributes to the element. 
+      element.type = type;
+      element.id = value
+      element.value = value; // Really? You want the default value to be the type string?
+      element.name = value; // And the name too?
+      element.innerHTML = value
+      element.style.margin = "20px";
+      element.onclick = function () { // Note this is a function
+
+        // var childElements = document.querySelector("questions");
+        // var delChild = childElements.lastChild; 
+        // while (delChild) {
+        //   childElements.removeChild(delChild);
+        //   delChild = childElements.lastChild;
+        //   }
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function (e) {
+          if (this.readyState === 4) {
+            window.output = JSON.parse(e.target.responseText);
+            console.log("Server ASRs returned: ", output);
+            document.getElementById("speechText").innerHTML = "USER : " + output.query;
+            document.getElementById("aiText").innerHTML = "XOXE : " + output.response;
+            speech.text = output.response
+            window.speechSynthesis.speak(speech)
+            document.getElementById("myname").style.display = "none";
+            var elem = document.getElementById('questions');
+            elem.parentNode.removeChild(elem);
+          }
+        };
+        xhr.open('POST', '/open-ai-qa', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({ text: value }));
+      };
+
+      var foo = document.getElementById("questions");
+      foo.appendChild(element)
+
+    }
+
+    // document.getElementById("btnAdd").onclick = function() {
+    //   add("text");
+    // };
+
+    speech.addEventListener("end", afterSpeech);
+    let count = 0;
+    let temp_result = "";
+    var last_question = "";
+    var last_answer = "";
+    var last_qa = "";
+    // var rec = new webkitSpeechRecognition();
+    // rec.continuous = true;
+    // rec.interimResults = true;
+    // rec.lang = "en-US";
+
+
+    // recordButton.addEventListener("click", startRecording);
+    // stopButton.addEventListener("click", stopRecording);
+    cancelButton.addEventListener("click", cancelRecording);
+    listenBtn.addEventListener("click", ttsspeak);
+
+
+    function ttsspeak() {
+      speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+      speech.text = intermed.value
+      window.speechSynthesis.speak(speech);
+    }
+
+
+    function sendmsg() {
+      var chattext = document.getElementById("inputPopup").value
+      console.log(chattext)
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function (e) {
+        if (this.readyState === 4) {
+          window.output = JSON.parse(e.target.responseText);
+          console.log("Server ASRs returned: ", output);
+          if (output.response === "Can you repeat that...") {
+            result = sentences[Math.floor(Math.random() * sentences.length)];
+            document.getElementById("result").innerHTML = result;
+            speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+            window.speechSynthesis.speak(speech)
+          }
+          else {
+            if (output.answer_expacted) {
+              output.response += "     " + output.answer_expacted[0]
+              flag = true
+              expact_answer = output.answer_expacted[1]
+              question = output.answer_expacted[2]
+            }
+            // else{
+            //   output.response+= "     "+ output.questions
+            // }
+            document.getElementById("speechText").innerHTML = "USER : " + output.query;
+            document.getElementById("aiText").innerHTML = "XOXE : " + output.response;
+            last_question = output.query;
+            last_answer = output.response;
+            speech.text = output.response;
+            speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+            window.speechSynthesis.speak(speech)
+            document.getElementById("myname").style.display = "none";
+          }
+        }
+      };
+      if (last_question) {
+        last_qa = "Human : " + last_question + "\nAI : " + last_answer;
+      }
+      xhr.open('POST', '/ai-service', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ text: chattext, presponse: last_qa }));
+    }
+
+    var image = document.getElementById('myMicImg');
+
+    function changeImage() {
+      //alert(image.innerHTML);
+      if (image.innerHTML == "mic") {
+        image.style.backgroundColor = "red";
+        image.innerHTML = "mic_off";
+        startRecording()
+      }
+      else {
+        image.style.backgroundColor = "#665858";
+        image.innerHTML = "mic";
+        stopRecording()
+      }
+    }
+
+
+    cancelButton.disabled = true;
+
+
+    function startRecording_() {
+      let x = 0
+      rec.start();
+      // recordButton.disabled = true;
+      // stopButton.disabled = false;
+      cancelButton.disabled = false;
+      document.getElementById("myname").style.display = "flex";
+      console.log('Speech recognition started');
+    }
+
+    document.getElementById("myname").style.display = "none";
+
+
+    function pop() {
+      var popup = document.getElementById('myPopup');
+      popup.classList.toggle('show');
+    }
+
+    function cancelRecording() {
+      result = sentences[Math.floor(Math.random() * sentences.length)];
+      rec.stop()
+      image.style.backgroundColor = "#665858";
+      image.innerHTML = "mic";
+      window.speechSynthesis.cancel();
+
+      // recordButton.disabled = false;
+      // stopButton.disabled = true;
+      cancelButton.disabled = true;
+      document.getElementById("speechText").innerHTML = "";
+      document.getElementById("aiText").innerHTML = "XOXE : " + result;
+      speech.text = result;
+      speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+      window.speechSynthesis.speak(speech)
+      document.getElementById("myname").style.display = "none";
+      console.log('Speech recognition stoped');
+    }
+
+    // rec.onresult = function (event) {
+    //     result = event.results[event.results.length - 1][0].transcript 
+    //     document.getElementById("result").innerHTML = result;
+    //     // transcript.value += result;
+    //   };
+
+    function aitextresponse() {
+      // stopButton.disabled = true;
+      // cancelButton.disabled = true;
+      // recordButton.disabled = false;
+      // rec.stop();
+      document.getElementById("result").innerHTML = "";
+      console.log("----")
+      document.getElementById("myname").style.display = "none";
+      // var result = event.results[event.results.length - 1][0].transcript;
+      console.log(result)
+      document.getElementById("result").innerHTML = result;
+
+      if (flag) {
+        flag = false
+        if (result.toLowerCase().includes(expact_answer.toLowerCase())) {
+          result = question
+          question = ""
+          expact_answer = ""
+        }
+      }
+      console.log("i am here ...", result)
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function (e) {
+        if (this.readyState === 4) {
+          window.output = JSON.parse(e.target.responseText);
+          console.log("Server ASRs returned: ", output);
+          if (output.response === "Can you repeat that...") {
+            result = sentences[Math.floor(Math.random() * sentences.length)];
+            document.getElementById("result").innerHTML = result;
+            speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+            window.speechSynthesis.speak(speech)
+          }
+          else {
+            if (output.answer_expacted) {
+              output.response += "     " + output.answer_expacted[0]
+              flag = true
+              expact_answer = output.answer_expacted[1]
+              question = output.answer_expacted[2]
+            }
+            // else{
+            //   output.response+= "     "+ output.questions
+            // }
+            document.getElementById("speechText").innerHTML = "USER : " + output.query;
+            document.getElementById("aiText").innerHTML = "XOXE : " + output.response;
+            last_question = output.query;
+            last_answer = output.response;
+            speech.text = output.response;
+            speech.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.name == voiceSelect.value; })[0];
+            window.speechSynthesis.speak(speech)
+            document.getElementById("myname").style.display = "none";
+          }
+        }
+      };
+      if (last_question) {
+        last_qa = "Human : " + last_question + "\nAI : " + last_answer;
+      }
+      xhr.open('POST', 'https://jerry4148.pythonanywhere.com/ai-service', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ text: result, presponse: last_qa }));
+      result = ""
+    }
+
+    // rec.onerror = function(event) {
+    //   console.log('Speech recognition error: ' + event.error);
+    //   result = ""
+    //   rec.stop()
+    //   document.getElementById("result").innerHTML = "";
+    // }
+
+    // rec.onend = function() {
+    //   // console.log(temp_result)
+    //   console.log('Speech recognition ended');
+    //   rec.onresult = function (event) {
+    //     result = event.results[event.results.length - 1][0].transcript
+    //     document.getElementById("result").innerHTML = result;
+    //     // transcript.value += result;
+    //   };
+    //   // rec.start();
+    // }
+
+    // rec.start();
+  </script>
+
+
+</body>
+
+</html>
