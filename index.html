@@ -568,7 +568,7 @@
         last_qa = "Human : " + last_question + "\nAI : " + last_answer;
       }
       xhr.open('POST', 'https://jerry4148.pythonanywhere.com/ai-service', true);
-      // xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.send(JSON.stringify({ text: chattext, presponse: last_qa }));
     }
 
@@ -673,7 +673,7 @@
 
           // fetch('https://jerry4148.pythonanywhere.com/ai-service', options)//.then(data => data.json())
           //   .then(data => {
-          output = data
+//           output = data
           console.log("Server ASRs returned: ", output);
           if (output.response === "Can you repeat that...") {
             result = sentences[Math.floor(Math.random() * sentences.length)];
