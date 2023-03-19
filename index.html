@@ -567,7 +567,7 @@
       if (last_question) {
         last_qa = "Human : " + last_question + "\nAI : " + last_answer;
       }
-      xhr.open('POST', 'https://jerry4148.pythonanywhere.com/ai-service', true);
+      xhr.open('POST', '/ai-service', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.send(JSON.stringify({ text: chattext, presponse: last_qa }));
     }
@@ -666,14 +666,9 @@
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
       };
 
-      var xhr = new XMLHttpRequest();
-      xhr.onload = function (e) {
-        if (this.readyState === 4) {
-          window.output = JSON.parse(e.target.responseText);
-
-          // fetch('https://jerry4148.pythonanywhere.com/ai-service', options)//.then(data => data.json())
-          //   .then(data => {
-//           output = data
+      fetch('https://jerry4148.pythonanywhere.com/ai-service', options).then(data => data.json())
+        .then(data => {
+          output = data
           console.log("Server ASRs returned: ", output);
           if (output.response === "Can you repeat that...") {
             result = sentences[Math.floor(Math.random() * sentences.length)];
@@ -701,17 +696,16 @@
             document.getElementById("myname").style.display = "none";
           }
 
-        }
-      }
-      // .catch ((error) => {
-      //   console.error('Error:', error);
-      // });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
       if (last_question) {
         last_qa = "Human : " + last_question + "\nAI : " + last_answer;
       }
-      xhr.open('POST', 'https://jerry4148.pythonanywhere.com/ai-service', true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(fd);
+      // xhr.open('POST', 'https://jerry4148.pythonanywhere.com/ai-service', true);
+      // xhr.setRequestHeader('Content-Type', 'application/json');
+      // xhr.send(JSON.stringify({ text: result, presponse: last_qa }));
       result = ""
     }
 
